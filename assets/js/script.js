@@ -1,3 +1,8 @@
+//  $(init)
+//  function init(){
+  var today = dayjs()
+$("#currentDay").text(moment().format("MMMM Do YYYY"));  //Displays current date at top of html page
+ //}
 // Wrap all code that interacts with the DOM in a call to jQuery to ensure that
 // the code isn't run until the browser has finished rendering all the elements
 // in the html.
@@ -21,3 +26,4 @@ $(function () {
     //
     // TODO: Add code to display the current date in the header of the page.
   });
+
