@@ -1,29 +1,48 @@
-//  $(init)
-//  function init(){
-  var today = dayjs()
-$("#currentDay").text(moment().format("MMMM Do YYYY"));  //Displays current date at top of html page
- //}
-// Wrap all code that interacts with the DOM in a call to jQuery to ensure that
-// the code isn't run until the browser has finished rendering all the elements
-// in the html.
-$(function () {
-    // TODO: Add a listener for click events on the save button. This code should
-    // use the id in the containing time-block as a key to save the user input in
-    // local storage. HINT: What does `this` reference in the click listener
-    // function? How can DOM traversal be used to get the "hour-x" id of the
-    // time-block containing the button that was clicked? How might the id be
-    // useful when saving the description in local storage?
-    //
-    // TODO: Add code to apply the past, present, or future class to each time
-    // block by comparing the id to the current hour. HINTS: How can the id
-    // attribute of each time-block be used to conditionally add or remove the
-    // past, present, and future classes? How can Day.js be used to get the
-    // current hour in 24-hour time?
-    //
-    // TODO: Add code to get any user input that was saved in localStorage and set
-    // the values of the corresponding textarea elements. HINT: How can the id
-    // attribute of each time-block be used to do this?
-    //
-    // TODO: Add code to display the current date in the header of the page.
-  });
+$(init); // Calls function at load of page / init used from jQuery
 
+function init() { 
+  //Displays date in header
+  var today = dayjs()
+  $("#currentDay").text(moment().format("dddd, MMMM Do"));
+
+  //Checks time block every minute (changes color as hour changes)
+  colorTimeBlocks();
+  setInterval(colorTimeBlocks, 60000);
+
+  //Retrieves date & time from local storages
+  $(".time-block").each(function() {
+   var blockId = $(this).attr("id");
+   $("#" + blockId + " textarea").text(localStorage.getItem(moment().format("DDDYYYY") + blockId));
+  });
+  
+  // Adds an event listener when the save button is clicked.  Calls save function
+  $(".saveBtn").on("click", save);
+}
+
+// This function updates the color of each time block based on the current time
+function colorTimeBlocks() {
+
+  $(".time-block").each(function() {
+   var actualTime = parseInt(moment().format("H"));
+   var listedTimeBlock = parseInt($(this).attr("id").replace("hour-", ""));
+
+   //Removes current class (color of block to "reset" based on actual time)
+   $(this).removeClass("past present future");
+
+   //Compares actual time to time block and sets color based on preset past present or future starter CSS code
+   if (listedTimeBlock < actualTime) {
+     $(this).addClass("past");
+   } else if (listedTimeBlock > actualTime) {
+     $(this).addClass("future");
+   } else {
+     $(this).addClass("present");
+   }
+  });
+}
+
+// This function saves the user input from the text area to localStorage when save button is clicked
+function save(event) {
+  var actualHour = $(this).parent().attr("id");
+
+  localStorage.setItem(moment().format("DDDYYYY") + actualHour, $("#" + actualHour + " textarea").val());
+}
